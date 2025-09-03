@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,56 +8,366 @@
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
             background-color: black;
             color: white;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: start;
             height: 100vh;
+            width: 100vw;
+            overflow: hidden;
         }
+        
         h1 {
-            margin-top: 1rem;
-            font-size: 2.5rem;
+            margin: 0;
+            padding: 20px 0;
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            z-index: 10;
+            background: linear-gradient(135deg, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            flex-shrink: 0;
         }
-        img {
-            max-width: 90%;
-            height: auto;
-            margin-top: 1rem;
-            border: 4px solid white;
-            border-radius: 10px;
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex: 1;
+            position: relative;
         }
-        iframe {
-            width: 90%;
-            height: 50vh;
-            margin-top: 1rem;
+        
+        /* Portrait-optimized poster layout - Full screen */
+        .layout-poster {
+            padding: 0;
+            height: 100%;
+        }
+        
+        .layout-poster .poster {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            object-position: center;
             border: none;
-            border-radius: 10px;
+            border-radius: 0;
+        }
+        
+        .layout-poster h1 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
+            z-index: 20;
+        }
+        
+        /* Portrait-optimized trailer layout - Dynamic scaling */
+        .layout-trailer {
+            padding: 0;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .layout-trailer .trailer {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            border-radius: 0;
+            transform-origin: center center;
+            /* Scaling will be applied dynamically via JavaScript */
+        }
+        
+        .layout-trailer h1 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
+            z-index: 20;
+        }
+        
+        /* Portrait-optimized combo layout - Dynamic video scaling */
+        .layout-combo {
+            flex-direction: column;
+            gap: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .layout-combo .poster {
+            width: 100vw;
+            height: 60vh;
+            object-fit: cover;
+            object-position: center top;
+            border: none;
+            border-radius: 0;
+            flex-shrink: 0;
+        }
+        
+        .layout-combo .trailer {
+            width: 100vw;
+            height: 40vh;
+            border: none;
+            border-radius: 0;
+            flex-shrink: 0;
+            transform-origin: center center;
+            /* Scaling will be applied dynamically via JavaScript */
+        }
+        
+        .layout-combo h1 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 70%, transparent 100%);
+            z-index: 20;
+        }
+        
+        /* Hidden elements */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Scrolling posters for upcoming movies - Portrait optimized */
+        .upcoming-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .upcoming-title {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 70%, transparent 100%);
+            padding: 30px 0;
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            z-index: 20;
+            background-clip: text;
+        }
+        
+        .scrolling-posters {
+            display: flex;
+            flex-direction: column;
+            animation: scroll-vertical 45s linear infinite;
+            height: auto;
+            min-height: 200vh;
+            padding-top: 150px;
+        }
+        
+        .upcoming-poster {
+            width: 100vw;
+            height: 80vh;
+            margin: 20px 0;
+            border: none;
+            border-radius: 0;
+            object-fit: cover;
+            object-position: center;
+            flex-shrink: 0;
+        }
+        
+        @keyframes scroll-vertical {
+            0% { transform: translateY(100vh); }
+            100% { transform: translateY(-100vh); }
+        }
+        
+        /* Movie info overlay for upcoming movies */
+        .movie-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
+            padding: 40px 20px;
+            text-align: center;
+            z-index: 15;
+        }
+        
+        .movie-info-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .movie-info-details {
+            font-size: 1.8rem;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
     </style>
 </head>
 <body>
     <h1 id="title">Loading...</h1>
-    <img id="poster" src="" alt="Poster">
-    <iframe id="trailer" src="" allowfullscreen></iframe>
+    
+    <div id="now-playing-container" class="container">
+        <img id="poster" class="poster" src="" alt="Poster">
+        <iframe id="trailer" class="trailer" src="" allowfullscreen></iframe>
+    </div>
+    
+    <div id="upcoming-container" class="upcoming-container hidden">
+        <div class="upcoming-title">Coming Up in AVS Cinemas</div>
+        <div class="scrolling-posters" id="scrolling-posters">
+            <!-- Upcoming movies will be inserted here -->
+        </div>
+    </div>
 
     <script>
+        let currentLayout = 'combo';
+        let hasCurrentMovie = false;
+        let videoScale = 2.0; // Default scaling factor
+
+        function applyLayout(layout, hasMovie) {
+            const container = document.getElementById('now-playing-container');
+            const poster = document.getElementById('poster');
+            const trailer = document.getElementById('trailer');
+            const upcomingContainer = document.getElementById('upcoming-container');
+            const body = document.body;
+            
+            // Remove all layout classes
+            container.classList.remove('layout-poster', 'layout-trailer', 'layout-combo');
+            body.classList.remove('layout-poster', 'layout-trailer', 'layout-combo');
+            
+            if (!hasMovie) {
+                // Show upcoming movies
+                container.classList.add('hidden');
+                upcomingContainer.classList.remove('hidden');
+                return;
+            }
+            
+            // Hide upcoming movies, show current movie
+            container.classList.remove('hidden');
+            upcomingContainer.classList.add('hidden');
+            
+            // Apply layout-specific classes and visibility
+            switch(layout) {
+                case 'poster':
+                    container.classList.add('layout-poster');
+                    body.classList.add('layout-poster');
+                    poster.classList.remove('hidden');
+                    trailer.classList.add('hidden');
+                    break;
+                case 'trailer':
+                    container.classList.add('layout-trailer');
+                    body.classList.add('layout-trailer');
+                    poster.classList.add('hidden');
+                    trailer.classList.remove('hidden');
+                    // Apply full video scaling for trailer-only layout
+                    applyVideoScaling(trailer, videoScale);
+                    break;
+                case 'combo':
+                default:
+                    container.classList.add('layout-combo');
+                    body.classList.add('layout-combo');
+                    poster.classList.remove('hidden');
+                    trailer.classList.remove('hidden');
+                    // Apply moderate scaling for combo layout (preserve some poster space)
+                    applyVideoScaling(trailer, videoScale * 0.8);
+                    break;
+            }
+        }
+
+        function applyVideoScaling(trailerElement, scale) {
+            // Apply dynamic video scaling based on user preference
+            trailerElement.style.transform = `scale(${scale})`;
+            trailerElement.style.transformOrigin = 'center center';
+            
+            console.log(`[VIDEO] Applied ${scale}x scaling for portrait optimization`);
+        }
+
         async function updateNowPlaying() {
             try {
                 const res = await fetch('/now_playing.json');
                 const data = await res.json();
 
+                currentLayout = data.layout_mode || 'combo';
+                videoScale = data.video_scale || 2.0;
                 const nowPlaying = data.now_playing;
 
-                document.getElementById('title').textContent = nowPlaying.title || "Now Showing";
-                document.getElementById('poster').src = nowPlaying.poster_url || "";
-                document.getElementById('trailer').src = nowPlaying.trailer_url || "";
+                console.log(`[LAYOUT] Mode: ${currentLayout}, Video Scale: ${videoScale}x`);
+
+                if (nowPlaying && nowPlaying.title) {
+                    hasCurrentMovie = true;
+                    document.getElementById('title').textContent = nowPlaying.title;
+                    document.getElementById('poster').src = nowPlaying.poster_url || "";
+                    document.getElementById('trailer').src = nowPlaying.trailer_url || "";
+                } else {
+                    hasCurrentMovie = false;
+                    document.getElementById('title').textContent = "Coming Up in AVS Cinemas";
+                    await loadUpcomingMovies();
+                }
+                
+                applyLayout(currentLayout, hasCurrentMovie);
+                
             } catch (error) {
                 console.error("Failed to fetch now playing data", error);
+                hasCurrentMovie = false;
+                document.getElementById('title').textContent = "Cinema Signage";
+                await loadUpcomingMovies();
+                applyLayout(currentLayout, hasCurrentMovie);
             }
         }
 
+        async function loadUpcomingMovies() {
+            try {
+                const res = await fetch('/history.json');
+                const data = await res.json();
+                
+                if (data.upcoming && data.upcoming.length > 0) {
+                    const scrollingContainer = document.getElementById('scrolling-posters');
+                    scrollingContainer.innerHTML = '';
+                    
+                    // Duplicate the array to create seamless scrolling
+                    const movies = [...data.upcoming, ...data.upcoming, ...data.upcoming];
+                    
+                    movies.forEach(movie => {
+                        if (movie.poster_url) {
+                            const movieDiv = document.createElement('div');
+                            movieDiv.style.position = 'relative';
+                            movieDiv.style.width = '100vw';
+                            movieDiv.style.height = '80vh';
+                            movieDiv.style.margin = '20px 0';
+                            
+                            const img = document.createElement('img');
+                            img.src = movie.poster_url;
+                            img.alt = movie.title;
+                            img.className = 'upcoming-poster';
+                            img.style.width = '100%';
+                            img.style.height = '100%';
+                            
+                            const overlay = document.createElement('div');
+                            overlay.className = 'movie-info-overlay';
+                            overlay.innerHTML = `
+                                <div class="movie-info-title">${movie.title}</div>
+                                <div class="movie-info-details">Available Now</div>
+                            `;
+                            
+                            movieDiv.appendChild(img);
+                            movieDiv.appendChild(overlay);
+                            scrollingContainer.appendChild(movieDiv);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to fetch upcoming movies", error);
+            }
+        }
+
+        // Initial load
         updateNowPlaying();
     </script>
 </body>
